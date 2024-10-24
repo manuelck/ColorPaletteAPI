@@ -1,27 +1,29 @@
-require("dotenv").config();
-
+require('dotenv').config(); 
 const express = require("express");
-const { connectDB } = require("./src/config/db");
-const songsRouter = require("./src/api/routes/songs");
-const artistsRouter = require("./src/api/routes/artists");
-const genresRouter = require("./src/api/routes/genres");
+const cors = require("cors");
+const { connectDB } = require("./src/config/db"); 
+const userRouter = require("./src/api/routes/user"); 
+const paletteRouter = require("./src/api/routes/colorPalette"); 
+const authRouter = require("./src/api/routes/auth"); 
 
 const app = express();
-
-app.use(express.json())
-
-connectDB()
-
-app.use("/api/v1/songs", songsRouter);      
-app.use("/api/v1/genres", genresRouter);    
-app.use("/api/v1/artists", artistsRouter); 
+const PORT = process.env.PORT || 3000; 
 
 
+app.use(cors());
+app.use(express.json()); 
 
-app.use("*", (req, res, next) =>{
-    return res.status(404).json("Route Not Found")
+
+connectDB(); 
+
+app.use("/api/v1/users", userRouter); 
+app.use("/api/v1/palettes", paletteRouter);
+app.use("/api/v1/auth", authRouter); 
+
+app.use((req, res) => {
+    res.status(404).json({ message: '404 Not Found' });
 });
 
-app.listen(3000, () => {
-    console.log("Servidor levantado en: http://localhost:3000");
+app.listen(PORT, () => {
+    console.log(`Server running on: http://localhost:${PORT}`);
 });
